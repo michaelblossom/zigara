@@ -1,10 +1,39 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
 import { ErrorMessage, Formik } from "formik";
 import Input from "../../components/input/input";
 import Button from "../../components/button/button";
-import { signupValidationSchema } from "../../utils/formValidationSchem";
+import { accountSettingsSchema } from "../../utils/formValidationSchem";
 
 const Account = () => {
+  const [loading, setLoading] = useState(false);
+
+  const accountSettings = async (data) => {
+    const token = localStorage.getItem("token");
+
+    // console.log(token);
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    setLoading(true);
+    console.log(data);
+    try {
+      const response = await axios.patch(
+        "https://zigara-app.herokuapp.com/updateuserprofile",
+        data,
+        config
+      );
+
+      setLoading(false);
+
+      console.log(response.data);
+    } catch (error) {
+      console.log(error.response.message);
+      setLoading(false);
+    }
+  };
   return (
     <div>
       <section className="col-span-2 mt-4">
@@ -20,10 +49,12 @@ const Account = () => {
             phoneNumber: "",
             country: "",
             state: "",
+            bio: "",
           }}
-          validationSchema={signupValidationSchema}
+          validationSchema={accountSettingsSchema}
           onSubmit={(data) => {
-            console.log(data);
+            // console.log(data);
+            accountSettings(data);
           }}
         >
           {({ values, handleChange, handleSubmit, errors, touched }) => (
@@ -59,7 +90,7 @@ const Account = () => {
                     onChange={handleChange}
                     value={values.lastName}
                     error={errors.lastName && touched.lastName}
-                    name="lasttName"
+                    name="lastName"
                     className="py-1 rounded-md w-full outline-none"
                   />
                   <ErrorMessage name="lastName">
@@ -149,6 +180,7 @@ const Account = () => {
                   <Button
                     text="Change"
                     type="submit"
+                    loading={loading}
                     onClick={() => console.log("Button Clicked")}
                     className="bg-rose-500 text-center px-2 py-2 mt-7 text-white w-36 rounded"
                   />

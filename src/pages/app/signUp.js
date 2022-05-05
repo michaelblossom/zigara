@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { FaFacebook } from "react-icons/fa";
 import { BsEye } from "react-icons/bs";
 import { AiOutlineEyeInvisible } from "react-icons/ai";
@@ -6,7 +7,20 @@ import { ErrorMessage, Formik } from "formik";
 import { signupValidationSchema } from "../../utils/formValidationSchem";
 import Input from "../../components/input/input";
 import Button from "../../components/button/button";
+import { Link } from "react-router-dom";
 const SignUp = () => {
+  const register = async (data) => {
+    try {
+      const response = await axios({
+        method: "Post",
+        url: "https://zigara-app.herokuapp.com/register",
+        data,
+      });
+      console.log(response);
+    } catch (error) {
+      console.log(error.response.message);
+    }
+  };
   const [eye, setEye] = useState(false);
   return (
     <>
@@ -17,22 +31,29 @@ const SignUp = () => {
             <small>*Please fill all required text field</small>
           </div>
           <Formik
+            // initialValues={{
+
+            // }}
+
             initialValues={{
-              email: "",
-              password: "",
               firstName: "",
               lastName: "",
+              email: "",
+              password: "",
+
               phoneNumber: "",
             }}
             validationSchema={signupValidationSchema}
             onSubmit={(data) => {
               console.log(data);
+              register(data);
             }}
           >
             {({ values, handleChange, handleSubmit, errors, touched }) => (
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
+                  console.log("Submited");
                   handleSubmit();
                 }}
               >
@@ -42,7 +63,7 @@ const SignUp = () => {
                       First Name *
                     </label>
                     <Input
-                      type={"text"}
+                      type="text"
                       placeholder={"first name"}
                       onChange={handleChange}
                       value={values.firstName}
@@ -60,7 +81,7 @@ const SignUp = () => {
                       Last Name *
                     </label>
                     <Input
-                      type={"text"}
+                      type="text"
                       placeholder={"last name"}
                       onChange={handleChange}
                       value={values.lastName}
@@ -135,7 +156,7 @@ const SignUp = () => {
                     text="SignUp"
                     type="submit"
                     // onClick={() => console.log("Button Clicked")}
-                    className="bg-rose-500 text-center px-2 py-2 mt-7 text-white w-36 rounded"
+                    className="bg-rose-500 text-center px-2 py-2 mt-7 text-white w-full rounded-xl"
                   />
                 </div>
               </form>
@@ -155,8 +176,10 @@ const SignUp = () => {
               <small>Forgot Password</small>
             </div>
             <div className="flex justify-center items-center">
-              Don’t have an account?{" "}
-              <span className="text-blue-400">Sign up</span>
+              Already have an account?{" "}
+              <Link to="/login">
+                <span className="pl-2 text-rose-500">log in</span>
+              </Link>
             </div>
           </div>
         </section>
